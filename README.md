@@ -10,9 +10,10 @@ Run project: mvn spring-boot:run  <br>
 
 Tech Stack:
 -----------
-Java 17
-Spring 3.X
-H2 In Memory DB
+Java 17 <br>
+Spring 3.X <br>
+H2 In Memory DB <br>
+Maven <br>
 
 
 1) Get Available conference rooms API:<br>
