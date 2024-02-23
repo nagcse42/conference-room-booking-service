@@ -15,8 +15,9 @@ Spring 3.X <br>
 H2 In Memory DB <br>
 Maven <br>
 
-
-1) Get Available conference rooms API:<br>
+PFB API Details:
+---------------
+1) Fetch Available conference rooms API:<br>
 URL :  GET : http://localhost:8080/api/v1/conference-rooms?startTime=10:00&endTime=10:30 <br>
 Header : Content-Type : application/json <br>
 
