@@ -1,0 +1,27 @@
+<configuration>
+
+    <!-- File Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/application.log</file>
+        <append>true</append>
+        <encoder>
+           <pattern>%d{HH:mm:ss.SSS} [%thread] [%property{springAppName},%X{traceId:-},%X{spanId:-}] %-5level %logger{36} - %msg%n</pattern>
+                    
+        </encoder>
+    </appender>
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] [%property{springAppName},%X{traceId:-},%X{spanId:-}] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Set the root level and attach both appenders -->
+    <root level="info">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+<springProperty scope="context" name="springAppName" source="spring.application.name"/>
+</configuration>

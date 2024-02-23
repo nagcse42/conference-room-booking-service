@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: com.conference.service.ConfRoomBookingServiceImplTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.397 s <<< FAILURE! - in com.conference.service.ConfRoomBookingServiceImplTest
+bookRoom_ValidBooking_ReturnsBooking  Time elapsed: 0.008 s  <<< ERROR!
+com.conference.exception.RoomBookingException: Booking can only be done for the current date and future time slots.
+	at com.conference.service.ConfRoomBookingServiceImplTest.bookRoom_ValidBooking_ReturnsBooking(ConfRoomBookingServiceImplTest.java:72)
+

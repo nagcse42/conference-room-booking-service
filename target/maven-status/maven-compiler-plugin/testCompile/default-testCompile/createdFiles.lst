@@ -1,0 +1,4 @@
+com\conference\controller\ConferenceRoomControllerTest.class
+com\conference\mapper\DataTransformerTest.class
+com\conference\service\ConfRoomBookingServiceImplTest.class
+com\conference\controller\BookingControllerTest.class
