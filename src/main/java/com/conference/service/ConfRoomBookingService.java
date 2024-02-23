@@ -11,5 +11,5 @@ import com.conference.dto.BookingResponse;
 public interface ConfRoomBookingService {
 	BookingResponse bookConferenceRoom(BookingDetails bookingDetails, String user);
 	boolean isRoomAvailable(Long roomId, LocalTime startTime, LocalTime endTime);
-	void validateBookingForCurrentDate(LocalTime startTime);
+	void validateRequestedBookingForCurrentDate(LocalTime startTime);
 }

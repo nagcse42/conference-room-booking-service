@@ -12,6 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ConfRoomDetailsRepository extends JpaRepository<ConferenceRoomDetailsEntity, Long> {
-	List<ConferenceRoomDetailsEntity> findByMaxCapacityGreaterThanEqualOrderByMaxCapacityAsc(int participants);
-
+	List<ConferenceRoomDetailsEntity> findByCapacityGreaterThanEqualOrderByCapacityAsc(int participants);
 }

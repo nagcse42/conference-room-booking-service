@@ -1,8 +1,8 @@
 server:
   port: 8080
-    
+
 spring:
-  application: 
+  application:
     name: conference-booking-service
   cloud:
     compatibility-verifier:
@@ -20,15 +20,17 @@ spring:
       maximumPoolSize: 10
       idleTimeout: 30000
       poolName: conferenceHikariCP
-  h2: 
+  h2:
     console:
       enabled: true # Enabled for access h2 console for Dev
       path: /h2-console
   jpa:
     hibernate:
-        ddl-auto: create
+      ddl-auto: update
+    generate-ddl: true
     database-platform: org.hibernate.dialect.H2Dialect
-    
+    defer-datasource-initialization: true
+
 management:
   endpoints:
     web:
@@ -36,12 +38,17 @@ management:
       exposure:
         include: "health" #configprops,logfile,metrics,loggers,caches,httptrace,prometheus
 
-     
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui-custom.html
+
 app:
   maintenance-periods:
-      - startTime: "09:00"
-        endTime: "09:15"
-      - startTime: "13:00"
-        endTime: "13:15"
-      - startTime: "17:00"
-        endTime: "17:15"
+    - startTime: "09:00"
+      endTime: "09:15"
+    - startTime: "13:00"
+      endTime: "13:15"
+    - startTime: "17:00"
+      endTime: "17:15"

@@ -57,14 +57,17 @@ public class ConfRoomBookingServiceImpl implements ConfRoomBookingService {
 	@Override
     public BookingResponse bookConferenceRoom(BookingDetails bookingDetails, String user) {
 		logger.info("Booking conference room started for the user: {} and request: {}", user, bookingDetails);
-    	validateBookingForCurrentDate(bookingDetails.getStartTime());
-        validateBookingInterval(bookingDetails); 
+    	validateRequestedBookingForCurrentDate(bookingDetails.getStartTime());
+        validateRequestedBookingInterval(bookingDetails);
         validateRoomCapacity(bookingDetails);  
-        checkMaintenanceSchedule(bookingDetails); 
-        ConferenceRoomDetailsEntity availableRoom = getAvailableConferenceRoom(bookingDetails);
-        logger.info("Booking confirmed for the room: {}",availableRoom.getName());
-        BookingDetailsEntity confirmedBooking =  bookingDetailsRepository.save(dataTransformer.transformBookingDetailsToEntity(bookingDetails,user,availableRoom));
-		return dataTransformer.transformsBookingDataToResponse(confirmedBooking);
+        checkMaintenanceSchedule(bookingDetails);
+        BookingDetailsEntity confirmedBooking = null;
+        synchronized (this){
+            ConferenceRoomDetailsEntity availableRoom = getAvailableConferenceRoom(bookingDetails);
+            logger.info("Booking confirmed for the room: {}",availableRoom.getName());
+            confirmedBooking =  bookingDetailsRepository.save(dataTransformer.transformBookingDetailsToEntity(bookingDetails,user,availableRoom));
+        }
+       return dataTransformer.transformsBookingDataToResponse(confirmedBooking);
     }
 
 
@@ -79,7 +82,7 @@ public class ConfRoomBookingServiceImpl implements ConfRoomBookingService {
     public boolean isRoomAvailable(Long roomId, LocalTime confStartTime, LocalTime confEndTime) {
 		logger.info("Verifying the requested room available for booking");
         List<BookingDetailsEntity> overlappingBookings = bookingDetailsRepository
-                .findByConferenceRoom_ConferenceRoomIdAndEndTimeAfterAndStartTimeBefore(roomId, confStartTime, confEndTime);
+                .findByConfRoomDetails_ConferenceRoomIdAndEndTimeAfterAndStartTimeBefore(roomId, confStartTime, confEndTime);
         return !overlappingBookings.isEmpty();
     }
     
@@ -110,7 +113,7 @@ public class ConfRoomBookingServiceImpl implements ConfRoomBookingService {
      * @param confStartTime
      */
 	@Override
-    public void validateBookingForCurrentDate(LocalTime confStartTime) {
+    public void validateRequestedBookingForCurrentDate(LocalTime confStartTime) {
 		logger.info("Validating the requested confStartTime: {} ",confStartTime);
     	Optional.ofNullable(confStartTime)
         .ifPresent(currentLocalTime -> {
@@ -130,8 +133,8 @@ public class ConfRoomBookingServiceImpl implements ConfRoomBookingService {
      */
     private ConferenceRoomDetailsEntity getAvailableConferenceRoom(BookingDetails bookingDetails) {
     	logger.info("Booking is in process trying to find available rooms....");
-    	List<ConferenceRoomDetailsEntity> allRooms = conferenceRoomRepo.findByMaxCapacityGreaterThanEqualOrderByMaxCapacityAsc(bookingDetails.getParticipantsCount());
-    	for (ConferenceRoomDetailsEntity conferenceRoomDetailsEntity : allRooms) {
+        List<ConferenceRoomDetailsEntity> allRooms = conferenceRoomRepo.findByCapacityGreaterThanEqualOrderByCapacityAsc(bookingDetails.getParticipantsCount());
+        for (ConferenceRoomDetailsEntity conferenceRoomDetailsEntity : allRooms) {
     		 if(!isRoomAvailable(conferenceRoomDetailsEntity.getConferenceRoomId(), bookingDetails.getStartTime(), bookingDetails.getEndTime()))
     			 return conferenceRoomDetailsEntity;
     	}
@@ -143,7 +146,7 @@ public class ConfRoomBookingServiceImpl implements ConfRoomBookingService {
 	 * 
 	 * @param bookingDetails
 	 */
-    private void validateBookingInterval(BookingDetails bookingDetails) {
+    private void validateRequestedBookingInterval(BookingDetails bookingDetails) {
     	logger.info("Booking is in process validating requested slots Intervals....");
         if (!isValidTimeInterval(bookingDetails.getStartTime(), bookingDetails.getEndTime())) {
             throw new RoomBookingException(ErrorCodes.INCORRECT_BOOKING_INTERVALS.name(),ErrorCodes.INCORRECT_BOOKING_INTERVALS.getErrorMessage());

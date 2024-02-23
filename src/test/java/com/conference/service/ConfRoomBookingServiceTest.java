@@ -34,9 +34,9 @@ import com.conference.repository.ConfRoomDetailsRepository;
  * @author Nagarjuna Paritala
  */
 @ExtendWith(MockitoExtension.class)
-class ConfRoomBookingServiceImplTest {
+class ConfRoomBookingServiceTest {
 
-	private static final String LOGGED_IN_USER = "user";
+	private static final String USER = "user";
 
 	@Mock
     private BookingDetailsRepository bookingDetailsRepository;
@@ -67,9 +67,9 @@ class ConfRoomBookingServiceImplTest {
         when(utilsService.isMaintenanceScheduled(any(), any())).thenReturn(false);
         when(dataTransformer.transformBookingDetailsToEntity(any(),anyString(),any())).thenReturn(new BookingDetailsEntity());
         when(dataTransformer.transformsBookingDataToResponse(any())).thenReturn(new BookingResponse());
-        when(confRoomDetailsRepository.findByMaxCapacityGreaterThanEqualOrderByMaxCapacityAsc(anyInt())).thenReturn(Collections.singletonList(createValidConferenceRoom()));
+        when(confRoomDetailsRepository.findByCapacityGreaterThanEqualOrderByCapacityAsc(anyInt())).thenReturn(Collections.singletonList(createValidConferenceRoom()));
         when(bookingDetailsRepository.save(any())).thenReturn(createBookingData());
-        BookingResponse bookedRoom = bookingService.bookConferenceRoom(newBooking,LOGGED_IN_USER);
+        BookingResponse bookedRoom = bookingService.bookConferenceRoom(newBooking, USER);
         assertNotNull(bookedRoom);
     }
     
@@ -79,7 +79,7 @@ class ConfRoomBookingServiceImplTest {
     @Test
     void bookRoom_NoRooms_Available_ThrowsException() {
     	BookingDetails newBooking = createValidBooking();
-        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking,LOGGED_IN_USER));
+        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking, USER));
     }
     /**
      * Test case : User unable to book conference room due to participants are not more than 1
@@ -88,7 +88,7 @@ class ConfRoomBookingServiceImplTest {
     void bookRoom_For_Single_Participants_ThrowsException() {
     	BookingDetails newBooking = createValidBooking();
     	newBooking.setParticipantsCount(1);
-        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking,LOGGED_IN_USER));
+        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking, USER));
     }
     
     /**
@@ -99,7 +99,7 @@ class ConfRoomBookingServiceImplTest {
    void bookRoom_For_55_Participants_ThrowsException() {
         BookingDetails newBooking = createValidBooking();
         newBooking.setParticipantsCount(55);
-        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking,LOGGED_IN_USER));
+        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking, USER));
     }
     
     /**
@@ -111,7 +111,7 @@ class ConfRoomBookingServiceImplTest {
     	newBooking.setStartTime(LocalTime.of(10,00));
     	newBooking.setEndTime(LocalTime.of(9,00));
     	
-        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking,LOGGED_IN_USER));
+        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking, USER));
     }
     /**
      * Test case : User Unable to book the conference room due to the schedule is under maintenance scheduled (17-18hr) 
@@ -121,7 +121,7 @@ class ConfRoomBookingServiceImplTest {
     	BookingDetails newBooking = createValidBooking();
     	newBooking.setStartTime(LocalTime.of(17,00));
     	newBooking.setEndTime(LocalTime.of(18,00));
-        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking,LOGGED_IN_USER));
+        assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking, USER));
     }
    
    /**
@@ -132,7 +132,7 @@ class ConfRoomBookingServiceImplTest {
    	BookingDetails newBooking = createValidBooking();
    	newBooking.setStartTime(LocalTime.of(LocalTime.now().getHour()-1,00));
    	newBooking.setEndTime(LocalTime.of(LocalTime.now().getHour(),00));
-       assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking,LOGGED_IN_USER));
+       assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking, USER));
    }
    
    /**
@@ -144,7 +144,7 @@ class ConfRoomBookingServiceImplTest {
    	newBooking.setStartTime(LocalTime.of(10,00));
    	newBooking.setEndTime(LocalTime.of(10,10));
    	
-   assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking,LOGGED_IN_USER));
+   assertThrows(RoomBookingException.class, () -> bookingService.bookConferenceRoom(newBooking, USER));
    }
    
    /**
@@ -153,7 +153,7 @@ class ConfRoomBookingServiceImplTest {
     */
    @Test
    void testIsRoomBooked_When_Room_Available_Then_Return_False() {
-	   when(bookingDetailsRepository.findByConferenceRoom_ConferenceRoomIdAndEndTimeAfterAndStartTimeBefore(any(),any(),any())).thenReturn(Collections.singletonList(new BookingDetailsEntity()));
+	   when(bookingDetailsRepository.findByConfRoomDetails_ConferenceRoomIdAndEndTimeAfterAndStartTimeBefore(any(),any(),any())).thenReturn(Collections.singletonList(new BookingDetailsEntity()));
 	   assertTrue(bookingService.isRoomAvailable(1l,LocalTime.now(),LocalTime.of(LocalTime.now().getHour()+1,30)));
    }
 
@@ -163,7 +163,7 @@ class ConfRoomBookingServiceImplTest {
     */
    @Test
    void testIsRoomBooked_When_Room_Available_Then_Return_True() {
-	   when(bookingDetailsRepository.findByConferenceRoom_ConferenceRoomIdAndEndTimeAfterAndStartTimeBefore(any(),any(),any())).thenReturn(Collections.emptyList());
+	   when(bookingDetailsRepository.findByConfRoomDetails_ConferenceRoomIdAndEndTimeAfterAndStartTimeBefore(any(),any(),any())).thenReturn(Collections.emptyList());
 	   assertFalse(bookingService.isRoomAvailable(1l,LocalTime.now(),LocalTime.of(LocalTime.now().getHour()+1,30)));
    }
 
@@ -192,5 +192,4 @@ class ConfRoomBookingServiceImplTest {
         room.setCapacity(10);
         return room;
     }
-    
 }

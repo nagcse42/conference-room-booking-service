@@ -48,7 +48,7 @@ public class ConfRoomDetailsServiceImpl implements ConfRoomDetailsService {
 		List<ConferenceRoomDetailsEntity> allRooms = conferenceRoomRepo.findAll();
 		List<ConferenceRoomDetailsEntity> bookedRooms = allRooms.stream()
 				.filter(room -> bookingServiceImpl.isRoomAvailable(room.getConferenceRoomId(), startTime, endTime))
-				.collect(Collectors.toList());
+				.toList();
 		logger.info("rooms booked for this slot :{} ",bookedRooms.size());
 		allRooms.removeAll(bookedRooms);
 		return dataTransformer.transEntityToConfRoomDetails(allRooms);
@@ -60,7 +60,7 @@ public class ConfRoomDetailsServiceImpl implements ConfRoomDetailsService {
 	 */
 	private void validateBookingForCurrentDate(LocalTime timeSlot) {
 		logger.info("Validating booking slot is for future date");
-		bookingServiceImpl.validateBookingForCurrentDate(timeSlot);
+		bookingServiceImpl.validateRequestedBookingForCurrentDate(timeSlot);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class ConfRoomDetailsServiceImpl implements ConfRoomDetailsService {
 	 */
 	@Override
 	public ConferenceRoomDetailsEntity fetchConfRoomById(Long roomId) {
-		logger.info("fetching conference room details be ID {}.......",roomId);
+		logger.info("fetching conference room details by ID {}.......",roomId);
         return conferenceRoomRepo.findById(roomId).orElse(null);
     }
 	

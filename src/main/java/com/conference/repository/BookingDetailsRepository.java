@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface BookingDetailsRepository extends JpaRepository<BookingDetailsEntity, Long> {
-    List<BookingDetailsEntity> findByConferenceRoom_ConferenceRoomIdAndEndTimeAfterAndStartTimeBefore(Long roomId, LocalTime start, LocalTime end);
+    List<BookingDetailsEntity> findByConfRoomDetails_ConferenceRoomIdAndEndTimeAfterAndStartTimeBefore(Long roomId, LocalTime start, LocalTime end);
 }
 
