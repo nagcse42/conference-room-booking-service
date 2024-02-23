@@ -8,11 +8,13 @@ Open terminal in project root folder
 Build project: mvn clean install <br>
 Run project: mvn spring-boot:run  <br>
 
-Use Below APIs to run and verify the data in H2DB by login (provided details below) <br>
-  API-1) Get available conference rooms by requested time slots <br>
-  API-2) Book conference room <br>
-  
-  
+Tech Stack:
+-----------
+Java 17
+Spring 3.X
+H2 In Memory DB
+
+
 1) Get Available conference rooms API:<br>
 URL :  GET : http://localhost:8080/api/v1/conference-rooms?startTime=10:00&endTime=10:30 <br>
 Header : Content-Type : application/json <br>
